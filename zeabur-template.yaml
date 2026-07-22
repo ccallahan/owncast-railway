@@ -1,0 +1,66 @@
+# yaml-language-server: $schema=https://schema.zeabur.app/template.json
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+    name: Owncast
+spec:
+    description: Self-hosted live streaming — your own Twitch with chat and RTMP ingest.
+    icon: https://owncast.online/images/owncast-logo-1000x1000.png
+    tags:
+        - Streaming
+        - Video
+        - Live
+        - RTMP
+        - Open Source
+    readme: |-
+        # Owncast
+
+        [Owncast](https://owncast.online/) is a free and open source live streaming and chat server: point OBS (or any RTMP source) at it and you get your own Twitch-style stream page with built-in chat, viewer stats, and Fediverse integration.
+
+        ## After deployment
+
+        1. Your stream page is the service domain; the admin panel is at `/admin` (username `admin`, password in the service instructions).
+        2. In OBS, set the Server to the RTMP address shown in the instructions and use the stream key.
+        3. Transcoding is CPU-only; the default passthrough quality works everywhere.
+
+        Template source: [nomideusz/owncast-railway](https://github.com/nomideusz/owncast-railway)
+    variables:
+        - key: PUBLIC_DOMAIN
+          type: DOMAIN
+          name: Public Domain
+          description: The domain of your Owncast stream page
+    services:
+        - name: owncast
+          icon: https://owncast.online/images/owncast-logo-1000x1000.png
+          template: PREBUILT
+          domainKey: PUBLIC_DOMAIN
+          spec:
+            source:
+                image: ghcr.io/nomideusz/owncast-railway:latest
+            ports:
+                - id: web
+                  port: 8080
+                  type: HTTP
+                - id: rtmp
+                  port: 1935
+                  type: TCP
+            volumes:
+                - id: data
+                  dir: /app/data
+            env:
+                PORT:
+                    default: "8080"
+                    expose: false
+                ADMIN_PASSWORD:
+                    default: ${PASSWORD}
+                    expose: false
+                STREAM_KEY:
+                    default: ${PASSWORD}
+                    expose: false
+            instructions:
+                - title: Admin panel (user admin)
+                  content: https://${ZEABUR_WEB_DOMAIN}/admin
+                - title: Admin password / stream key (same on first boot — change either in Admin)
+                  content: ${PASSWORD}
+                - title: OBS server
+                  content: rtmp://${PORT_FORWARDED_HOSTNAME}:${RTMP_PORT_FORWARDED_PORT}/live
