@@ -29,7 +29,7 @@ This template runs Owncast as a single Railway service. The web interface and HL
 
 To go live from OBS:
 
-1. Find the TCP proxy address on the service (Settings → Networking → TCP Proxy), e.g. `turntable.proxy.rlwy.net:12345`.
+1. Add a TCP proxy to the service: Settings → Networking → TCP Proxy → application port `1935`. Railway assigns an address like `turntable.proxy.rlwy.net:12345`.
 2. In OBS set Server to `rtmp://turntable.proxy.rlwy.net:12345/live` (your host/port will differ).
 3. Set the Stream Key to the `STREAM_KEY` variable's value.
 
